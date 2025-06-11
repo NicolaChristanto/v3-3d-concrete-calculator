@@ -327,7 +327,7 @@
             color: #333333; /* Default dark color */
         }
 
-        /* Specific alignment for Description column in summary table */
+        /* Specifically align description in summary table to left */
         .summary-section tbody td:nth-child(2) > div {
             justify-content: flex-start; /* Align description to the left */
         }
@@ -421,10 +421,12 @@
                 background-color: #fff;
                 padding: 0;
                 margin: 0;
+                font-family: 'Inter', sans-serif;
             }
             .container {
                 box-shadow: none;
                 max-width: 100%;
+                margin: 0;
             }
             .header, .project-input, .section, .cost-per-cubic {
                 box-shadow: none;
@@ -435,6 +437,8 @@
             .header h1 {
                 -webkit-print-color-adjust: exact; /* Ensure gradient prints */
                 color: #2C3E50; /* Fallback for older browsers */
+                font-size: 2em; /* Adjust font size for print */
+                gap: 5px; /* Adjust gap for print */
             }
             .section-header {
                 -webkit-print-color-adjust: exact; /* Ensure background prints */
@@ -443,26 +447,84 @@
                 border-radius: 0;
                 margin: -10px -10px 10px -10px; /* Adjust negative margin for print */
                 padding: 10px;
+                font-size: 1.1em; /* Adjust font size for print */
+                gap: 5px; /* Adjust gap for print */
             }
-            .alert, .print-button, .use-checkbox, .editable, .input-group input:not([readonly]) {
+            .alert, .print-button, .use-checkbox, 
+            .input-group input:not([readonly]):not([type="checkbox"]), /* Hide editable inputs but not read-only or checkboxes */
+            .input-group select {
                 display: none !important; /* Hide alerts, buttons, checkboxes, and editable inputs */
             }
-            /* Ensure calculated values and read-only inputs are visible */
-            .calculated, .input-group input[readonly], .input-group select {
+
+            /* Show read-only inputs for print */
+            .input-group input[readonly] {
                 display: block !important;
                 background-color: transparent !important;
                 border: none !important;
                 padding: 0 !important;
                 box-shadow: none !important;
                 color: #000 !important; /* Ensure black text */
+                text-align: left !important; /* Align to left */
+                width: auto !important; /* Allow content to dictate width */
+                max-width: none !important; /* Remove max-width constraint */
             }
+
+            /* Show labels for read-only inputs in print */
             .input-group label {
                 font-weight: bold;
                 color: #000;
+                display: block !important; /* Ensure labels are block level for print */
+                margin-bottom: 0px !important; /* Reduce space after labels */
             }
+            
+            /* Ensure calculated values and read-only elements are visible */
+            .calculated {
+                display: block !important; /* Change to block for consistent layout in print */
+                background-color: transparent !important;
+                border: none !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                color: #000 !important; /* Ensure black text */
+                text-align: right !important; /* Keep right alignment for numbers */
+                width: auto !important; /* Allow content to dictate width */
+            }
+
+            /* For calculated div inside summary table, ensure it's still flex-end */
+            .summary-section tbody td > div {
+                display: flex !important;
+                justify-content: flex-end !important;
+                align-items: center !important;
+                width: 100% !important;
+                height: auto !important; /* Auto height to prevent cutting off */
+                padding: 0 5px !important; /* Add a little padding to the div content */
+                box-sizing: border-box !important;
+                white-space: normal !important; /* Allow wrapping if needed */
+                overflow: visible !important; /* Ensure visible */
+                text-overflow: clip !important; /* No ellipsis */
+                color: #000 !important;
+                font-size: 12px; /* Adjust font size for summary table content */
+            }
+            .summary-section tbody td {
+                padding: 0 !important; /* Remove padding from cell itself */
+                vertical-align: middle !important;
+            }
+
+
+            /* Specifically align description in summary table to left */
+            .summary-section tbody td:nth-child(2) > div {
+                justify-content: flex-start !important;
+            }
+
             /* Tables */
-            table, th, td {
+            table {
+                break-inside: avoid; /* Avoid breaking tables across pages */
+                page-break-inside: avoid; /* For older browsers */
+                width: 100% !important;
+                font-size: 12px !important; /* Smaller font for general tables in print */
+            }
+            th, td {
                 border-color: #ccc !important; /* Lighter borders for print */
+                padding: 5px !important; /* Uniform padding for print */
             }
             th {
                 background-color: #f0f0f0 !important; /* Lighter header background */
@@ -473,6 +535,39 @@
             }
             .summary-section .total-row td > div {
                 color: #000 !important; /* Ensure total text is black */
+            }
+            
+            /* Specific fix for Project Name display in print */
+            .print-only-project-name {
+                display: block !important; /* Show for print */
+                font-size: 1.5em; /* Larger font for project name */
+                font-weight: bold;
+                color: #000;
+                margin-bottom: 10px;
+                text-align: center;
+            }
+            .project-name-input-group {
+                display: none !important; /* Hide the input group for project name */
+            }
+            
+            /* Ensure project duration hours/minutes span shows in print */
+            #project_duration_hours_minutes {
+                display: inline !important;
+                color: #000 !important;
+            }
+
+            /* Adjustments for fixed width columns in summary table for print */
+            .summary-section table th:nth-child(1) { width: 15% !important; }
+            .summary-section table th:nth-child(2) { width: 25% !important; } /* Give more space to description */
+            .summary-section table th:nth-child(3) { width: 18% !important; }
+            .summary-section table th:nth-child(4) { width: 22% !important; }
+            .summary-section table th:nth-child(5) { width: 20% !important; } /* Adjust percentage column width */
+
+            .summary-section table td {
+                border-right: 1px solid #E0E6ED !important; /* Re-add right border for summary cells */
+            }
+            .summary-section table td:last-child {
+                border-right: none !important; /* No border for the last cell */
             }
         }
 
@@ -493,10 +588,11 @@
             <h3>🏗️ Project Parameters</h3>
             <!-- Group 1: Project Basic Info -->
             <div class="input-grid">
-                <div class="input-group">
+                <div class="input-group project-name-input-group"> <!-- Added class for print hiding -->
                     <label for="project_name">Project Name</label>
-                    <input type="text" id="project_name" placeholder="Enter project name" value="Sample Project">
+                    <input type="text" id="project_name" placeholder="Enter project name" value="Sample Project" onkeyup="updateProjectNameForPrint()"> <!-- Added onkeyup -->
                 </div>
+                <span id="print_project_name" class="print-only-project-name"></span> <!-- Element to display project name for print -->
                 <div class="input-group">
                     <label for="structure_type">Structure Type</label>
                     <select id="structure_type" onchange="calculateAll()">
@@ -707,7 +803,7 @@
                             <td>Merk Singa Merah</td>
                             <td><input type="number" class="editable" data-cost-type="material-qty" value="125" step="0.1" onchange="calculateAll()" id="cement_qty_per_m3"> Kg/m³</td>
                             <td><input type="number" class="editable" data-cost-type="material-price" value="1375" onchange="calculateAll()" id="cement_price_per_kg"> Rp/Kg</td>
-                            <td><input type="checkbox" class="use-checkbox" checked onchange="toggleRow(this)"></td>
+                            <td><input type="checkbox" class="use-checkbox" data-target-inputs=".material-cement-inputs" checked onchange="toggleRow(this)"></td>
                             <td class="calculated" id="cement_cost"></td>
                         </tr>
                         <tr>
@@ -1051,6 +1147,15 @@
     </div>
 
     <script>
+        // Function to update the hidden span for printing Project Name
+        function updateProjectNameForPrint() {
+            const projectNameInput = document.getElementById('project_name');
+            const printProjectNameSpan = document.getElementById('print_project_name');
+            if (projectNameInput && printProjectNameSpan) {
+                printProjectNameSpan.textContent = projectNameInput.value;
+            }
+        }
+
         // Data for available printers and their rental/purchase options
         const PRINTERS = [
             {
@@ -1313,6 +1418,7 @@
                     }
                     totalCost += projectTotalCost;
                 } else {
+                    const calculatedCell = row.querySelector('.calculated');
                     if (calculatedCell) {
                         calculatedCell.textContent = formatRupiah(0); // Set to 0 if not used
                     }
@@ -1400,7 +1506,7 @@
                 <td class="calculated"></td>
             `;
             tbody.appendChild(newRow); // Append the new row
-            updateTotalColspan('materials_tbody', 5); 
+            updateTotalColspan('materials_tbody'); // Call with tbodyId only
             calculateAll();
         }
 
@@ -1417,7 +1523,7 @@
                 <td class="calculated"></td>
             `;
             tbody.appendChild(newRow); // Append the new row
-            updateTotalColspan('rebar_tbody', 6); 
+            updateTotalColspan('rebar_tbody'); // Call with tbodyId only
             calculateAll();
         }
 
@@ -1433,7 +1539,7 @@
                 <td class="calculated"></td>
             `;
             tbody.appendChild(newRow); // Append the new row
-            updateTotalColspan('equipment_tbody', 5); 
+            updateTotalColspan('equipment_tbody'); // Call with tbodyId only
             calculateAll();
         }
 
@@ -1450,20 +1556,25 @@
                 <td class="calculated"></td>
             `;
             tbody.appendChild(newRow); // Append the new row
-            updateTotalColspan('labor_tbody', 6); 
+            updateTotalColspan('labor_tbody'); // Call with tbodyId only
             calculateAll();
         }
 
         // Function to dynamically update colspan for total rows
-        function updateTotalColspan(tbodyId, currentCalculatedColIndex) {
+        function updateTotalColspan(tbodyId) { // Removed defaultColspan parameter as it's now dynamically calculated
             const tbody = document.getElementById(tbodyId);
             const totalRow = tbody.querySelector('.total-row');
             if (totalRow) {
                 const totalTextCell = totalRow.querySelector('td:first-child');
                 const exampleRow = tbody.querySelector('tr:not(.total-row):not(.subheader-row)');
                 if (exampleRow) {
-                    const numDataCells = exampleRow.querySelectorAll('td').length; // Includes calculated cell
-                    totalTextCell.setAttribute('colspan', numDataCells - 1); // Span all but the last calculated cell
+                    const numDataCellsInRow = exampleRow.querySelectorAll('td').length; // Get actual number of cells in a data row
+                    totalTextCell.setAttribute('colspan', numDataCellsInRow - 1); // Span all but the last calculated cell
+                } else {
+                    // Fallback if no data rows exist (e.g., if all are deleted)
+                    // This fallback will ensure the colspan is correct even if all rows are removed manually.
+                    const numHeaders = tbody.closest('table').querySelectorAll('thead th').length;
+                    totalTextCell.setAttribute('colspan', numHeaders - 1);
                 }
             }
         }
@@ -1593,6 +1704,7 @@
             selectPrinter(PRINTERS[0].name, 0, 0); 
             // The initial state of checkboxes will be 'checked' by default.
             // When calculateAll() runs on load, it will use these checked states.
+            updateProjectNameForPrint(); // Initial call to display default project name for print
         });
     </script>
 </body>
