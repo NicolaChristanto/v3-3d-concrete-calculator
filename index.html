@@ -426,7 +426,6 @@
             .container {
                 box-shadow: none;
                 max-width: 100%;
-                margin: 0;
             }
             .header, .project-input, .section, .cost-per-cubic {
                 box-shadow: none;
@@ -496,19 +495,13 @@
                 align-items: center !important;
                 width: 100% !important;
                 height: auto !important; /* Auto height to prevent cutting off */
-                padding: 0 5px !important; /* Add a little padding to the div content */
+                padding: 0 !important; /* No padding from div itself */
                 box-sizing: border-box !important;
                 white-space: normal !important; /* Allow wrapping if needed */
                 overflow: visible !important; /* Ensure visible */
                 text-overflow: clip !important; /* No ellipsis */
                 color: #000 !important;
-                font-size: 12px; /* Adjust font size for summary table content */
             }
-            .summary-section tbody td {
-                padding: 0 !important; /* Remove padding from cell itself */
-                vertical-align: middle !important;
-            }
-
 
             /* Specifically align description in summary table to left */
             .summary-section tbody td:nth-child(2) > div {
@@ -519,12 +512,10 @@
             table {
                 break-inside: avoid; /* Avoid breaking tables across pages */
                 page-break-inside: avoid; /* For older browsers */
-                width: 100% !important;
-                font-size: 12px !important; /* Smaller font for general tables in print */
             }
             th, td {
                 border-color: #ccc !important; /* Lighter borders for print */
-                padding: 5px !important; /* Uniform padding for print */
+                padding: 8px !important; /* Uniform padding for print */
             }
             th {
                 background-color: #f0f0f0 !important; /* Lighter header background */
@@ -555,20 +546,6 @@
                 display: inline !important;
                 color: #000 !important;
             }
-
-            /* Adjustments for fixed width columns in summary table for print */
-            .summary-section table th:nth-child(1) { width: 15% !important; }
-            .summary-section table th:nth-child(2) { width: 25% !important; } /* Give more space to description */
-            .summary-section table th:nth-child(3) { width: 18% !important; }
-            .summary-section table th:nth-child(4) { width: 22% !important; }
-            .summary-section table th:nth-child(5) { width: 20% !important; } /* Adjust percentage column width */
-
-            .summary-section table td {
-                border-right: 1px solid #E0E6ED !important; /* Re-add right border for summary cells */
-            }
-            .summary-section table td:last-child {
-                border-right: none !important; /* No border for the last cell */
-            }
         }
 
     </style>
@@ -592,7 +569,7 @@
                     <label for="project_name">Project Name</label>
                     <input type="text" id="project_name" placeholder="Enter project name" value="Sample Project" onkeyup="updateProjectNameForPrint()"> <!-- Added onkeyup -->
                 </div>
-                <span id="print_project_name" class="print-only-project-name"></span> <!-- Element to display project name for print -->
+                <span id="print_project_name" class="print-only-project-name" style="display: none;"></span> <!-- Element to display project name for print -->
                 <div class="input-group">
                     <label for="structure_type">Structure Type</label>
                     <select id="structure_type" onchange="calculateAll()">
@@ -803,7 +780,7 @@
                             <td>Merk Singa Merah</td>
                             <td><input type="number" class="editable" data-cost-type="material-qty" value="125" step="0.1" onchange="calculateAll()" id="cement_qty_per_m3"> Kg/m³</td>
                             <td><input type="number" class="editable" data-cost-type="material-price" value="1375" onchange="calculateAll()" id="cement_price_per_kg"> Rp/Kg</td>
-                            <td><input type="checkbox" class="use-checkbox" data-target-inputs=".material-cement-inputs" checked onchange="toggleRow(this)"></td>
+                            <td><input type="checkbox" class="use-checkbox" checked onchange="toggleRow(this)"></td>
                             <td class="calculated" id="cement_cost"></td>
                         </tr>
                         <tr>
@@ -1418,7 +1395,6 @@
                     }
                     totalCost += projectTotalCost;
                 } else {
-                    const calculatedCell = row.querySelector('.calculated');
                     if (calculatedCell) {
                         calculatedCell.textContent = formatRupiah(0); // Set to 0 if not used
                     }
@@ -1506,7 +1482,7 @@
                 <td class="calculated"></td>
             `;
             tbody.appendChild(newRow); // Append the new row
-            updateTotalColspan('materials_tbody'); // Call with tbodyId only
+            updateTotalColspan('materials_tbody'); 
             calculateAll();
         }
 
@@ -1523,7 +1499,7 @@
                 <td class="calculated"></td>
             `;
             tbody.appendChild(newRow); // Append the new row
-            updateTotalColspan('rebar_tbody'); // Call with tbodyId only
+            updateTotalColspan('rebar_tbody'); 
             calculateAll();
         }
 
@@ -1539,7 +1515,7 @@
                 <td class="calculated"></td>
             `;
             tbody.appendChild(newRow); // Append the new row
-            updateTotalColspan('equipment_tbody'); // Call with tbodyId only
+            updateTotalColspan('equipment_tbody'); 
             calculateAll();
         }
 
@@ -1556,12 +1532,12 @@
                 <td class="calculated"></td>
             `;
             tbody.appendChild(newRow); // Append the new row
-            updateTotalColspan('labor_tbody'); // Call with tbodyId only
+            updateTotalColspan('labor_tbody'); 
             calculateAll();
         }
 
         // Function to dynamically update colspan for total rows
-        function updateTotalColspan(tbodyId) { // Removed defaultColspan parameter as it's now dynamically calculated
+        function updateTotalColspan(tbodyId) { // Removed defaultColspan parameter as it's not needed
             const tbody = document.getElementById(tbodyId);
             const totalRow = tbody.querySelector('.total-row');
             if (totalRow) {
@@ -1572,7 +1548,6 @@
                     totalTextCell.setAttribute('colspan', numDataCellsInRow - 1); // Span all but the last calculated cell
                 } else {
                     // Fallback if no data rows exist (e.g., if all are deleted)
-                    // This fallback will ensure the colspan is correct even if all rows are removed manually.
                     const numHeaders = tbody.closest('table').querySelectorAll('thead th').length;
                     totalTextCell.setAttribute('colspan', numHeaders - 1);
                 }
@@ -1704,7 +1679,7 @@
             selectPrinter(PRINTERS[0].name, 0, 0); 
             // The initial state of checkboxes will be 'checked' by default.
             // When calculateAll() runs on load, it will use these checked states.
-            updateProjectNameForPrint(); // Initial call to display default project name for print
+            updateProjectNameForPrint(); // Initial update for project name
         });
     </script>
 </body>
