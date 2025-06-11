@@ -540,12 +540,6 @@
             .project-name-input-group {
                 display: none !important; /* Hide the input group for project name */
             }
-            
-            /* Ensure project duration hours/minutes span shows in print */
-            #project_duration_hours_minutes {
-                display: inline !important;
-                color: #000 !important;
-            }
         }
 
     </style>
@@ -1537,7 +1531,7 @@
         }
 
         // Function to dynamically update colspan for total rows
-        function updateTotalColspan(tbodyId) { // Removed defaultColspan parameter as it's not needed
+        function updateTotalColspan(tbodyId) { // Removed defaultColspan as it's not needed anymore
             const tbody = document.getElementById(tbodyId);
             const totalRow = tbody.querySelector('.total-row');
             if (totalRow) {
